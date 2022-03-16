@@ -9,5 +9,7 @@ public class Main {
         CustomImage customImage = new CustomImage("test.jpg").resize(100);
         customImage.saveWeirdFormat("test.bin");
         customImage.save("testresized");
+        CustomImage customImage1 = CustomImage.fromRawData("test.bin");
+        customImage1.save("loaded");
     }
 }

@@ -7,6 +7,11 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Done by FogozIV
+ * Main goal of class is to easily read an image resize it, convert it to a theorically human readable format
+ *
+ */
 public class CustomImage {
     private final BufferedImage image;
     public CustomImage(BufferedImage image){
@@ -24,7 +29,39 @@ public class CustomImage {
         Graphics2D g = this.image.createGraphics();
         g.drawImage(bufferedImage, 0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
         g.dispose();
+    }
 
+    public CustomImage(byte[] bytes){
+        int width = getFromByteArray(bytes[0], bytes[1], bytes[2], bytes[3]);
+        int height = getFromByteArray(bytes[4], bytes[5], bytes[6], bytes[7]);
+        this.image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        for(int y = 0; y < height; y++){
+            for(int x = 0; x < width; x++){
+                int index = 8 + y*width*3 + x*3; //3 pixels per indexes
+                int value = getFromByteArray((byte)-1,bytes[index], bytes[index + 1], bytes[index + 2]);
+                this.image.setRGB(x, y, value);
+            }
+        }
+    }
+
+    public static CustomImage fromRawData(String fileName) throws IOException {
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fileName));
+        byte[] bytes = bis.readAllBytes();
+        return new CustomImage(bytes);
+    }
+
+    /**
+     * Again msb first
+     * @param b
+     * @return
+     */
+    private int getFromByteArray(byte... b){
+        int a = 0;
+        for(int i = 0; i < b.length; i++){
+            a |= ((b[i] &0xFF) << (8*(b.length - i - 1))); //AHAHAHH WTF using b[i] is just so broken LMAO.
+            // It allows us to access values out of bytes ? Byte shift was just broking everything lmao
+        }
+        return a;
     }
 
     public CustomImage(CustomImage customImage) {
@@ -63,8 +100,8 @@ public class CustomImage {
         List<Byte> bytes = new ArrayList<>();
         bytes.addAll(getBytesFromInteger(getWidth(), 4));
         bytes.addAll(getBytesFromInteger(getHeight(), 4));
-        for(int x = 0; x < getWidth(); x++){
-            for(int y = 0; y < getHeight(); y++){
+        for(int y = 0; y < getHeight(); y++){
+            for(int x = 0; x < getWidth(); x++){
                 bytes.addAll(getBytesFromInteger(getRGBInt(x, y), 3));
             }
         }
@@ -104,7 +141,8 @@ public class CustomImage {
     }
 
     public CustomImage setRGB(int x, int y, int rgb){
-        return this.setRGB(x, y, (rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF);
+        this.image.setRGB(x, y, rgb);
+        return this;
     }
 
     public int getRGBInt(int x, int y){
@@ -134,7 +172,7 @@ public class CustomImage {
         return new CustomImage(this);
     }
 
-    class RGB{
+    static class RGB{
         private final byte red, green, blue;
 
         public RGB(byte red, byte green, byte blue) {
