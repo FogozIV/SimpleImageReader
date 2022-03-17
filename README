@@ -1,0 +1,20 @@
+Simple App used to generated reduced size image and a weird version of it's binary to be able to read it with "human eyes".
+
+
+Juste use java -jar ImageSimplifier.jar and some arguments:
+-file name_of_file (avoid spaces, put the image extension)
+-output name_of_output_file (don't put extension at the end and avoid spaces to)
+
+-width width (will let you decide of the width but isn't a required argument)
+-height height (will let you decide of the height but isn't a required argument)
+
+if only height or width is given the initial ratio will be kept.
+
+--nosaveresized will prevent the program to save the resized image
+--nosavebin will prevent the program to save the "binary file"
+
+An example of execution:
+
+java -jar ImageSimplifier.jar -file test.jpg -output test_output -width 100 --nosaveresized
+
+This command will read the image file test.jpg resized it to 100 pixel width and then only save it's "binary"

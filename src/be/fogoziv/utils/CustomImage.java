@@ -68,10 +68,20 @@ public class CustomImage {
         this(customImage.image);
     }
 
+    public CustomImage resize(int value, boolean isWidth){
+        if(isWidth){
+            float ratio = ((float)value)/((float)this.image.getWidth());
+            int height = (int)Math.floor((double) ratio * this.image.getHeight());
+            return this.resize(value, height);
+        }else{
+            float ratio = ((float)value)/((float)this.image.getHeight());
+            int width = (int)Math.floor((double) ratio * this.image.getWidth());
+            return this.resize(width, value);
+        }
+    }
+
     public CustomImage resize(int width){
-        float ratio = ((float)width)/((float)this.image.getWidth());
-        int height = (int)Math.floor((double) ratio * this.image.getHeight());
-        return this.resize(width, height);
+        return this.resize(width, true);
     }
 
     public CustomImage resize(int width, int height){
